@@ -6,43 +6,51 @@ export default function Recipe({ ingredients }) {
     const [recipe, setRecipe] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [recipeCount, setRecipeCount] = useState(0);
 
-    useEffect(() => {
-        async function fetchRecipe() {
-            if (!ingredients || ingredients.length === 0) {
-                setError('No ingredients provided');
-                setLoading(false);
-                return;
-            }
-
-            try {
-                setLoading(true);
-                setError(null);
-                console.log('Fetching recipe for ingredients:', ingredients);
-                const recipeText = await getRecipeFromIngredients(ingredients);
-                
-                if (!recipeText || typeof recipeText !== 'string') {
-                    throw new Error('Invalid recipe format received');
-                }
-                
-                setRecipe(recipeText);
-            } catch (err) {
-                console.error('Recipe generation error:', err);
-                setError(err.message || 'Failed to generate recipe. Please try again.');
-                setRecipe(null);
-            } finally {
-                setLoading(false);
-            }
+    async function fetchRecipe(skip = 0) {
+        if (!ingredients || ingredients.length === 0) {
+            setError('No ingredients provided');
+            setLoading(false);
+            return;
         }
 
-        fetchRecipe();
+        try {
+            setLoading(true);
+            setError(null);
+            console.log('Fetching recipe for ingredients:', ingredients);
+            const recipeText = await getRecipeFromIngredients(ingredients, skip);
+            
+            if (!recipeText || typeof recipeText !== 'string') {
+                throw new Error('Invalid recipe format received');
+            }
+            
+            setRecipe(recipeText);
+        } catch (err) {
+            console.error('Recipe generation error:', err);
+            setError(err.message || 'Failed to generate recipe. Please try again.');
+            setRecipe(null);
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    useEffect(() => {
+        setRecipeCount(0); // Reset count when ingredients change
+        fetchRecipe(0);
     }, [ingredients]);
+
+    const handleGenerateAnother = async () => {
+        const nextCount = recipeCount + 1;
+        setRecipeCount(nextCount);
+        await fetchRecipe(nextCount);
+    };
 
     if (loading) {
         return (
             <section className="recipe-container">
                 <div className="suggested-recipe-container">
-                    <p>Generating your personalized recipe... This may take a few moments.</p>
+                   
                 </div>
             </section>
         );
@@ -53,7 +61,11 @@ export default function Recipe({ ingredients }) {
             <section className="recipe-container">
                 <div className="suggested-recipe-container">
                     <p className="error-message">{error}</p>
-                    <p>Please check that your API key is correctly set in the .env file and try again.</p>
+                    {error.includes('No more recipes') ? (
+                        <p>We've shown you all available recipes for these ingredients.</p>
+                    ) : (
+                        <h1>Error</h1>
+                    )}
                 </div>
             </section>
         );
@@ -72,6 +84,14 @@ export default function Recipe({ ingredients }) {
                     aria-live="polite"
                     dangerouslySetInnerHTML={{ __html: htmlContent }}
                 />
+                <div className="recipe-actions">
+                    <button 
+                        onClick={handleGenerateAnother}
+                        className="generate-another-btn"
+                    >
+                        Generate Another Recipe
+                    </button>
+                </div>
             </section>
         );
     } catch (err) {

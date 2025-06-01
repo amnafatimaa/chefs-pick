@@ -409,4 +409,30 @@ p {
   }
 }
 
+.recipe-actions {
+  margin-top: 2rem;
+  display: flex;
+  justify-content: center;
+}
+
+.generate-another-btn {
+  background-color: #4a90e2;
+  color: white;
+  border: none;
+  padding: 0.8rem 1.5rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.generate-another-btn:hover {
+  background-color: #357abd;
+}
+
+.generate-another-btn:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
 

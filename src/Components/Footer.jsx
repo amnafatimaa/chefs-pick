@@ -2,7 +2,7 @@ export default function Footer() {
     return  (
       <footer>
         <small>
-          © 2025 Amna. All Rights Reserved.
+        Cooked up by Amna 👩‍🍳 | © 2025 All Rights Reserved.
         </small>
       </footer>
     )
