@@ -1,5 +1,5 @@
 import { useState } from "react";
-import IngredientsList from "./IngredientsList";
+import IngredientsList from "./ingredientslist";
 import Recipe from "./recipecontent";
 
 function Main() {
